@@ -251,7 +251,8 @@ def compute_inflSet(R, groups):
     # Dans une implémentation réelle, vous devrez vérifier si la suppression
     # de points dans R affecte les voisins les plus proches des points dans groups.
 
-    return np.setdiff1d(groups, R)
+    result = [x for x in groups if not any(np.array_equal(x[0], element[0]) and x[1] == element[1] for element in R)]
+    return result
 
 def ensemble(errSetGj_Ki, R, newSet_minus, newSet_plus):
 
@@ -284,8 +285,8 @@ def KNNLearnUpdate(T, R, Error, candidate_k_values):
     # Calcul des nouveaux groupes en supprimant R
     new_groups = []
     for elt in groups:
-        ensemble = [x for x in elt if not any(np.array_equal(x[0], element[0]) and x[1] == element[1] for element in R)]
-        new_groups.append(ensemble)
+        ens = [x for x in elt if not any(np.array_equal(x[0], element[0]) and x[1] == element[1] for element in R)]
+        new_groups.append(ens)
 
     # Création du nouvel ensemble d'entraînement T'
     T_prime = []
@@ -323,6 +324,7 @@ def KNNLearnUpdate(T, R, Error, candidate_k_values):
                     newSet_minus.add((x, y))
 
             # Mise à jour de l'ensemble des erreurs pour le groupe j
+            # print(type(err_sets[j]), type(R), type(newSet_minus), type(newSet_plus))
             err_sets_prime[i][j] = ensemble(err_sets[j], R, newSet_minus, newSet_plus)
             error_prime[i][j] = len(err_sets[Gj_prime]) / len(Gj_prime)
 
