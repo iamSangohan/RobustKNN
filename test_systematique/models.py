@@ -1,4 +1,5 @@
 import random
+import time
 from django.db import models
 import numpy as np
 from sklearn.datasets import load_digits, load_iris
@@ -21,8 +22,12 @@ class Test(models.Model):
     inconnu = models.IntegerField(default=0)
     temps_ecoulé = models.IntegerField(blank=True, null=True)
     dataset = models.CharField(choices=Dataset_Choices, max_length=100)
+    taille_dataset = models.IntegerField(blank=True, null=True)
     
     def analyser_robustesse(self):
+        
+        start_time = time.time()
+        
         if self.dataset == 'Iris':
             X, y = load_iris(return_X_y=True)
 
@@ -34,6 +39,8 @@ class Test(models.Model):
             # Créer une liste de paires (x, y) à partir de X et y
             data = list(zip(X, y))
         
+        self.taille_dataset = len(data)
+        
         # Prendre nb_input éléments aléatoirement dans data
         data_input = []
         i = 0
@@ -44,12 +51,16 @@ class Test(models.Model):
             i += 1
         
         for element in data_input:
-            result = falsify.main(data[:20], self.seuil_poisoning, element[0])
+            result = falsify.main(data[:10], self.seuil_poisoning, element[0])
             if result == 'Falsified':
                 self.falsification += 1
             elif result == 'Certified':
                 self.certificat += 1
             else:
                 self.inconnu += 1
+        
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        self.temps_ecoulé = elapsed_time
         
         self.save()

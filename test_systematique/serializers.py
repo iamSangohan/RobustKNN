@@ -8,7 +8,7 @@ class TestSerializer(serializers.ModelSerializer):
         fields = '__all__'  # Include all fields by default
 
     def create(self, validated_data):
-        test = Test.objects.create(**validated_data)
+        test = Test(**validated_data)
         test.analyser_robustesse()
         test.save()
         return test
