@@ -39,7 +39,7 @@ class Test(models.Model):
             # Créer une liste de paires (x, y) à partir de X et y
             data = list(zip(X, y))
         
-        self.taille_dataset = len(data)
+        self.taille_dataset = len(data[:10])
         
         # Prendre nb_input éléments aléatoirement dans data
         data_input = []
